@@ -8,6 +8,10 @@ const proxy = httpProxy.createProxyServer({
 });
 
 module.exports = (req, res) => {
+  res.status(200).send('OK');
+};
+
+module.exports = (req, res) => {
   proxy.web(req, res);
 };
 
