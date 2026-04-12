@@ -1,4 +1,3 @@
-const { createServer } = require('http');
 const httpProxy = require('http-proxy');
 
 const proxy = httpProxy.createProxyServer({
@@ -8,11 +7,12 @@ const proxy = httpProxy.createProxyServer({
 });
 
 module.exports = (req, res) => {
-  res.status(200).send('OK');
-};
-
-module.exports = (req, res) => {
-  proxy.web(req, res);
+  proxy.web(req, res, (err) => {
+    if (err) {
+      res.statusCode = 502;
+      res.end('Proxy error: ' + err.message);
+    }
+  });
 };
 
 module.exports.config = {
