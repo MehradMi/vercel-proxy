@@ -1,22 +1,23 @@
-const httpProxy = require('http-proxy');
+export const config = {
+  runtime: 'edge',
+};
 
-const proxy = httpProxy.createProxyServer({
-  target: 'http://216.144.228.182:10000',
-  ws: true,
-  changeOrigin: true
-});
+export default async function handler(req) {
+  const url = new URL(req.url);
+  url.host = '216.144.228.182';
+  url.port = '10000';
+  url.protocol = 'http:';
+  url.pathname = '/vpn';
 
-module.exports = (req, res) => {
-  proxy.web(req, res, (err) => {
-    if (err) {
-      res.statusCode = 502;
-      res.end('Proxy error: ' + err.message);
-    }
+  const response = await fetch(url.toString(), {
+    method: req.method,
+    headers: req.headers,
+    body: req.body,
+    duplex: 'half',
   });
-};
 
-module.exports.config = {
-  api: {
-    bodyParser: false
-  }
-};
+  return new Response(response.body, {
+    status: response.status,
+    headers: response.headers,
+  });
+}
